@@ -25,11 +25,11 @@ class Ingreso():
         cursor.close()
         return info
 
-    def insert(self):
+    def insert(self,cedula,codigohabitacion,fechaingreso,fechasalida,cantidadpersonas):
         try:
             con = self.conectar()
             cursor = con.cursor()
-            sql = f"INSERT INTO ingreso VALUES('')"
+            sql = f"INSERT INTO ingreso (ced_hue, cod_hab,fec_ing,fec_sal,can_per) VALUES('{cedula}','{codigohabitacion}','{fechaingreso}','{fechasalida}','{cantidadpersonas}');)"
             cursor.execute(sql)
             result = cursor.rowcount #Número de filas afectadas
             cursor.execute("commit")
