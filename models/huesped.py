@@ -25,11 +25,11 @@ class Huesped():
         cursor.close()
         return info
 
-    def insert(self):
+    def insert(self, cedula, apellidos, nombres, direccion, ciudad, email,telefono):
         try:
             con = self.conectar()
             cursor = con.cursor()
-            sql = f"INSERT INTO huesped VALUES('')"
+            sql = f"INSERT INTO huesped VALUES('{cedula}','{apellidos}','{nombres}','{direccion}','{ciudad}' ,'{email}','{telefono}');"
             cursor.execute(sql)
             result = cursor.rowcount #Número de filas afectadas
             cursor.execute("commit")
@@ -42,7 +42,7 @@ class Huesped():
         try:
             con = self.conectar()
             cursor = con.cursor()
-            sql = f"UPDATE huesped SET nom_hue = {nombre}, ape_hue = {apellido}, dir_hue = {direccion}, ciu_hue = {ciudad},email_hue = {email},tel_hue = {telefono},WHERE ced_hue = {id};"
+            sql = f"UPDATE huesped SET nom_hue = '{nombre}', ape_hue = '{apellido}', dir_hue = '{direccion}', ciu_hue = '{ciudad}',email_hue = '{email}',tel_hue = '{telefono}',WHERE ced_hue = '{id}';"
             cursor.execute(sql)
             result = cursor.rowcount 
             cursor.execute("commit")

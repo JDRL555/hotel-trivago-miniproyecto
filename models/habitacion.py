@@ -25,11 +25,11 @@ class Habitacion():
         cursor.close()
         return info
 
-    def insert(self):
+    def insert(self,codigo,numerohabitacion,tipohabitacion,capacidadhabitacion,preciohabitacion,statushabitacion):
         try:
             con = self.conectar()
             cursor = con.cursor()
-            sql = f"INSERT INTO habitacion VALUES('')"
+            sql = f"INSERT INTO habitacion VALUES('{codigo}','{numerohabitacion}','{tipohabitacion}','{capacidadhabitacion}','{preciohabitacion}' ,'{statushabitacion}');"
             cursor.execute(sql)
             result = cursor.rowcount #Número de filas afectadas
             cursor.execute("commit")
@@ -38,11 +38,11 @@ class Habitacion():
         except Error as e:
             return e
 
-    def update(self, tipohabitacion, capacidadhabitacion, preciohabitacion, statushabitacion, id):
+    def update(self, tipohabitacion, capacidadhabitacion, preciohabitacion,numerohabitacion, statushabitacion, id):
         try:
             con = self.conectar()
             cursor = con.cursor()
-            sql = f"UPDATE habitacion SET tip_hab = {tipohabitacion}, cap_hab = {capacidadhabitacion}, pre_hab = {preciohabitacion},sta_hab = {statushabitacion} WHERE cod_hab = {id};"
+            sql = f"UPDATE habitacion SET tip_hab = {tipohabitacion}, cap_hab = {capacidadhabitacion}, pre_hab = {preciohabitacion},num_hab = {numerohabitacion}, sta_hab = {statushabitacion} WHERE cod_hab = {id};"
             cursor.execute(sql)
             result = cursor.rowcount 
             cursor.execute("commit")
