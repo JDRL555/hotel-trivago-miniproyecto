@@ -13,7 +13,7 @@ def open_ingreso(root, bg_img):
   Ingreso(root, bg_img)
 
 class MainView(Canvas):
-  def __init__(self, root, bg_img):
+  def __init__(self, root, bg_img, huesped_img, habitacion_img, ingreso_img):
     super().__init__(root)
 
     self.propagate(False)
@@ -46,7 +46,7 @@ class MainView(Canvas):
       borderwidth=0,
       activebackground="#2c5d9e",
       cursor="hand2",
-      command=lambda: open_huesped(self.root, bg_img)
+      command=lambda: open_huesped(self.root, huesped_img)
     )
 
     habitacion_btn = Button(
@@ -60,7 +60,7 @@ class MainView(Canvas):
       borderwidth=0,
       activebackground="#a06535",
       cursor="hand2",
-      command=lambda: open_habitacion(self.root, bg_img)
+      command=lambda: open_habitacion(self.root, habitacion_img)
     )
 
     ingreso_btn = Button(
@@ -74,7 +74,7 @@ class MainView(Canvas):
       borderwidth=0,
       activebackground="#a32828",
       cursor="hand2",
-      command=lambda: open_ingreso(self.root, bg_img)
+      command=lambda: open_ingreso(self.root, ingreso_img)
     )
 
     huesped_btn.bind("<Enter>", lambda e: huesped_btn.configure(bg="#6aaafd"))

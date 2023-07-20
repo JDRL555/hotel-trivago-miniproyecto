@@ -1,7 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
 
-
 class Huesped():
     def conectar(self):
         conexion = mysql.connector.connect(host="localhost",user="root",passwd="",db="hospedaje",port=3307)
@@ -29,7 +28,7 @@ class Huesped():
         try:
             con = self.conectar()
             cursor = con.cursor()
-            sql = f"INSERT INTO huesped VALUES('{cedula}','{apellidos}','{nombres}','{direccion}','{ciudad}' ,'{email}','{telefono}');"
+            sql = f"INSERT INTO huesped VALUES({cedula},'{apellidos}','{nombres}','{direccion}','{ciudad}' ,'{email}','{telefono}');"
             cursor.execute(sql)
             result = cursor.rowcount #Número de filas afectadas
             cursor.execute("commit")

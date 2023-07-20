@@ -1,13 +1,12 @@
 import mysql.connector
 from mysql.connector import Error
 
-
 class Habitacion():
     def conectar(self):
         conexion = mysql.connector.connect(host="localhost",user="root",passwd="",db="hospedaje",port=3307)
         return conexion
 
-    def select_all(self,id):
+    def select_all(self):
         con = self.conectar()
         cursor = con.cursor()
         sql = "SELECT * FROM habitacion;"
@@ -22,14 +21,14 @@ class Habitacion():
         sql = f"SELECT * FROM habitacion WHERE cod_hab = {id}"
         cursor.execute(sql)
         info = cursor.fetchone()
-        cursor.close()
+        con.close()
         return info
 
     def insert(self,codigo,numerohabitacion,tipohabitacion,capacidadhabitacion,preciohabitacion,statushabitacion):
         try:
             con = self.conectar()
             cursor = con.cursor()
-            sql = f"INSERT INTO habitacion VALUES('{codigo}','{numerohabitacion}','{tipohabitacion}','{capacidadhabitacion}','{preciohabitacion}' ,'{statushabitacion}');"
+            sql = f"INSERT INTO habitacion VALUES('{codigo}','{numerohabitacion}','{tipohabitacion}','{capacidadhabitacion}',{preciohabitacion} ,'{statushabitacion}');"
             cursor.execute(sql)
             result = cursor.rowcount #Número de filas afectadas
             cursor.execute("commit")
