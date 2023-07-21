@@ -1,9 +1,8 @@
-import mysql.connector
-from mysql.connector import Error
+from mysql.connector import connect, Error
 
 class Habitacion():
     def conectar(self):
-        conexion = mysql.connector.connect(host="localhost",user="root",passwd="",db="hospedaje",port=3307)
+        conexion = connect(host="localhost",user="root",passwd="",db="hospedaje")
         return conexion
 
     def select_all(self):
@@ -18,7 +17,7 @@ class Habitacion():
     def select_one(self,id):
         con = self.conectar()
         cursor = con.cursor()
-        sql = f"SELECT * FROM habitacion WHERE cod_hab = {id}"
+        sql = f"SELECT * FROM habitacion WHERE cod_hab = '{id}'"
         cursor.execute(sql)
         info = cursor.fetchone()
         con.close()
@@ -41,7 +40,7 @@ class Habitacion():
         try:
             con = self.conectar()
             cursor = con.cursor()
-            sql = f"UPDATE habitacion SET tip_hab = {tipohabitacion}, cap_hab = {capacidadhabitacion}, pre_hab = {preciohabitacion},num_hab = {numerohabitacion}, sta_hab = {statushabitacion} WHERE cod_hab = {id};"
+            sql = f"UPDATE habitacion SET tip_hab = '{tipohabitacion}', cap_hab = '{capacidadhabitacion}', pre_hab = '{preciohabitacion}', num_hab = {numerohabitacion}, sta_hab = '{statushabitacion}' WHERE cod_hab = '{id}';"
             cursor.execute(sql)
             result = cursor.rowcount 
             cursor.execute("commit")
@@ -54,7 +53,7 @@ class Habitacion():
         try:
             con = self.conectar()
             cursor = con.cursor()
-            sql = f"DELETE FROM habitacion WHERE cod_hab = {id};"
+            sql = f"DELETE FROM habitacion WHERE cod_hab = '{id}';"
             cursor.execute(sql)
             result = cursor.rowcount 
             cursor.execute("commit")

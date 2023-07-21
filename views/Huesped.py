@@ -1,6 +1,8 @@
 from tkinter            import *
 from tkinter.messagebox import *
 
+from controllers.huesped import huesped as controller 
+
 class Huesped(Toplevel):
   def __init__(self, root, bg_img):
 
@@ -30,6 +32,7 @@ class Huesped(Toplevel):
       "Nombres del huésped",
       "Dirección del huésped",
       "Ciudad del huésped",
+      "Email del huésped",
       "Teléfono del huésped",
     ]
 
@@ -37,164 +40,175 @@ class Huesped(Toplevel):
       self.destroy()
       Huesped(self.root, self.bg_img)
 
-    def on_save(): 
-      showinfo("Exito", "Registrado exitosamente!")
+    def on_save(ced_hue, ape_hue, nom_hue, dir_hue, ciu_hue, email_hue, tel_hue): 
+      resultado = controller.insert(ced_hue, ape_hue, nom_hue, dir_hue, ciu_hue, email_hue, tel_hue)
+      print(resultado)
+      if resultado.get("error"):
+        showerror("ERROR", resultado.get("msg"))
+      else:
+        if resultado.get("msg") == 1:
+          showinfo("Respuesta", "Registrado exitosamente")
 
-    def on_update(codigo_entry):
-      codigo_entry.destroy()
-      main_canvas.delete("codigo_texto")
+    def on_update(ced_hue, ape_hue, nom_hue, dir_hue, ciu_hue, email_hue, tel_hue):
+      resultado = controller.update(ced_hue, ape_hue, nom_hue, dir_hue, ciu_hue, email_hue, tel_hue)
+      print(resultado)
+      if resultado.get("error"):
+        showerror("ERROR", resultado.get("msg"))
+      else:
+        if resultado.get("msg") == 1:
+          showinfo("Respuesta", "Editado exitosamente")
+        else:
+          showwarning("Respuesta", "Debes cambiar al menos una columna")
 
-      cedula_variable     = StringVar(main_canvas)
-      apellidos_variable  = StringVar(main_canvas)
-      nombres_variable    = StringVar(main_canvas)
-      direccion_variable  = StringVar(main_canvas)
-      ciudad_variable     = StringVar(main_canvas)
-      telefono_variable   = StringVar(main_canvas)
+    def on_before_update(codigo_entry, accept_btn, ced_hue):
+      print(ced_hue)
+      resultado = controller.select_one(ced_hue)
 
-      cedula_variable.set("31386760")
-      apellidos_variable.set("Rodriguez Leal")
-      nombres_variable.set("Joshua David")
-      direccion_variable.set("Barrio Sucre parte baja urbanizacion bajumbal calle dorada casa nro 2")
-      ciudad_variable.set("San Cristobal")
-      telefono_variable.set("04127343339")
+      print(f"resultado: {resultado}")
 
-      variables = [
-        cedula_variable,
-        apellidos_variable,
-        nombres_variable,
-        direccion_variable,
-        ciudad_variable,
-        telefono_variable
-      ]
+      if isinstance(resultado.get("msg"), str):
+        showerror("ERROR", "Habitación no encontrada")
+        on_cancel()
+      else:
+        codigo_entry.destroy()
+        accept_btn.destroy()
 
-      x_text = 550
-      y_text = 158
+        huesped = {
+          "Cédula del huésped": resultado.get("msg")[0],
+          "Apellidos del huésped": resultado.get("msg")[1],
+          "Nombres del huésped": resultado.get("msg")[2],
+          "Dirección del huésped": resultado.get("msg")[3],
+          "Ciudad del huésped": resultado.get("msg")[4],
+          "Email del huésped": resultado.get("msg")[5],
+          "Teléfono del huésped": resultado.get("msg")[6],
+        }
 
-      x_entry = 580
-      y_entry = 146
+        print(huesped)
 
-      for index, option in enumerate(self.options):
-        main_canvas.create_text(
-          x_text, y_text, 
-          text=option,
-          width=1000,
-          fill="white",
-          font=("Roboto", 16),
-          justify="right",
-          anchor="e"
-        )
+        main_canvas.delete("codigo_texto")
 
-        entry = Entry(
-          main_canvas,
-          width=45,
-          font=("Roboto", 14),
-          textvariable=variables[index]
-        )
-        entry.place(x=x_entry, y=y_entry)
+        cedula_variable     = StringVar(main_canvas)
+        apellidos_variable  = StringVar(main_canvas)
+        nombres_variable    = StringVar(main_canvas)
+        direccion_variable  = StringVar(main_canvas)
+        ciudad_variable     = StringVar(main_canvas)
+        email_variable      = StringVar(main_canvas)
+        telefono_variable   = StringVar(main_canvas)
 
-        if index == 2:
-          y_text += 60
-          y_entry += 60
-        else:  
-          y_text += 50
-          y_entry += 50
+        cedula_variable.set(huesped["Cédula del huésped"])
+        apellidos_variable.set(huesped["Apellidos del huésped"])
+        nombres_variable.set(huesped["Nombres del huésped"])
+        direccion_variable.set(huesped["Dirección del huésped"])
+        ciudad_variable.set(huesped["Ciudad del huésped"])
+        email_variable.set(huesped["Email del huésped"])
+        telefono_variable.set(huesped["Teléfono del huésped"])
 
-    def on_delete():
-      if askyesno("Seguro?", "Estas seguro que deseas eliminar el huesped?"):
-        showinfo("Exito", "Huesped eliminado exitosamete")
-
-    def on_search():
-      habitacion = {
-        "Cédula del huésped": "31386760",
-        "Apellidos del huésped": "Rodriguez Leal",
-        "Nombres del huésped": "Joshua David",
-        "Dirección del huésped": "Barrio Sucre parte baja urbanizacion bajumbal calle dorada casa nro 2",
-        "Ciudad del huésped": "San Cristobal",
-        "Teléfono del huésped": "04127343339"
-      }
-
-      x_option = 30
-      y_option = 250
-
-      y_value = 310
-
-      options = list(habitacion.keys())
-      values  = list(habitacion.values())
-
-      for index, option in enumerate(options):
-        main_canvas.create_text(
-          x_option, y_option, 
-          text=option,
-          width=150,
-          fill="white",
-          font=("Roboto", 14),
-          justify="center",
-          anchor="w"
-        )
-
-        if index == 0 or index == 1: x_option += 160
-        else: x_option += 230
-      
-      x_value = 35
-
-      for index, value in enumerate(values):
-        main_canvas.create_text(
-          x_value, y_value, 
-          text=value,
-          width=360,
-          fill="white",
-          font=("Roboto", 14),
-          justify="center",
-          anchor="w"
-        )
-
-        if  index == 0: x_value += 160
-        if  index == 1: x_value += 160
-        if  index == 2: x_value += 140
-        if  index == 3: x_value += 330
-        if  index == 4: x_value += 210
-
-    def on_click(action):
-      select_all_btn.place_forget()
-      select_one_btn.place_forget()
-      create_btn.place_forget()
-      update_btn.place_forget()
-      delete_btn.place_forget()
-      
-      if action=="select_all": 
-        huespedes = [
-          {
-            "Cédula del huésped": "31386760",
-            "Apellidos del huésped": "Rodriguez Leal",
-            "Nombres del huésped": "Joshua David",
-            "Dirección del huésped": "Barrio Sucre parte baja urbanizacion bajumbal calle dorada casa nro 2",
-            "Ciudad del huésped": "San Cristobal",
-            "Teléfono del huésped": "04127343339"
-          },
-          {
-            "Cédula del huésped": "30297705",
-            "Apellidos del huésped": "Mirabal Vera",
-            "Nombres del huésped": "Carlos Ramon",
-            "Dirección del huésped": "unidad vecinal bloque 3 apartamento 02-03",
-            "Ciudad del huésped": "San Cristobal",
-            "Teléfono del huésped": "04247106340"
-          },
-          {
-            "Cédula del huésped": "29507396",
-            "Apellidos del huésped": "Auvert C",
-            "Nombres del huésped": "Anyela M",
-            "Dirección del huésped": "urbanizacion juan maldonado, la concordia",
-            "Ciudad del huésped": "San Cristobal",
-            "Teléfono del huésped": "04261018391"
-          }
+        variables = [
+          cedula_variable,
+          apellidos_variable,
+          nombres_variable,
+          direccion_variable,
+          ciudad_variable,
+          email_variable,
+          telefono_variable
         ]
 
+        x_text = 550
+        y_text = 158
+
+        x_entry = 580
+        y_entry = 146
+
+        options = list(huesped.keys())
+
+        for index, option in enumerate(options):
+          main_canvas.create_text(
+            x_text, y_text, 
+            text=option,
+            width=1000,
+            fill="white",
+            font=("Roboto", 16),
+            justify="right",
+            anchor="e"
+          )
+
+          entry = Entry(
+            main_canvas,
+            width=45,
+            font=("Roboto", 14),
+            textvariable=variables[index]
+          )
+          entry.place(x=x_entry, y=y_entry)
+
+          if index == 2:
+            y_text += 60
+            y_entry += 60
+          else:  
+            y_text += 50
+            y_entry += 50
+
+        Button(
+          main_canvas,
+          width=30, 
+          text="Editar",
+          bg="#6cc950",
+          fg="white",
+          pady=10,
+          font=("Roboto", 14),
+          borderwidth=0,
+          activebackground="#447e32",
+          activeforeground="white",
+          cursor="hand2",
+          command=lambda: on_update(
+            cedula_variable.get(),
+            apellidos_variable.get(),
+            nombres_variable.get(),
+            direccion_variable.get(),
+            ciudad_variable.get(),
+            email_variable.get(),
+            telefono_variable.get()
+          )
+        ).place(x=650, y=520)
+
+    def on_delete(ced_hue):
+      if askyesno("Seguro?", "Estas seguro que deseas eliminar el huesped?"):
+        huesped = controller.select_one(ced_hue)
+        if not len(huesped.get("msg")):
+          showerror("ERROR", "Huesped no encontrado")
+        else:
+          resultado = controller.delete(ced_hue)
+          if resultado.get("error"):
+            showerror("ERROR", resultado.get("msg"))
+          else:
+            if resultado.get("msg") == 1:
+              showinfo("Respuesta", "Eliminado exitosamente")
+
+    def on_search(ced_hue):
+      resultado = controller.select_one(ced_hue)
+
+      print(resultado)
+
+      if not isinstance(resultado.get("msg"), tuple):
+        showerror("ERROR", "Huesped no encontrado")
+        on_cancel()
+      else:
+        huesped = {
+          "Cédula del huésped": resultado.get("msg")[0],
+          "Apellidos del huésped": resultado.get("msg")[1],
+          "Nombres del huésped": resultado.get("msg")[2],
+          "Dirección del huésped": resultado.get("msg")[3],
+          "Ciudad del huésped": resultado.get("msg")[4],
+          "Email del huésped": resultado.get("msg")[5],
+          "Teléfono del huésped": resultado.get("msg")[6],
+        }
+
         x_option = 30
-        y_option = 170
+        y_option = 250
 
-        y_value = 230
+        y_value = 310
 
-        options = list(huespedes[0].keys())
+        options = list(huesped.keys())
+        values  = list(huesped.values())
 
         for index, option in enumerate(options):
           main_canvas.create_text(
@@ -207,49 +221,119 @@ class Huesped(Toplevel):
             anchor="w"
           )
 
-          if index == 0 or index == 1: x_option += 160
-          else: x_option += 230
-        
-        for huesped in huespedes:
-          x_value = 35
-          values  = list(huesped.values())
+          x_option += 160
 
-          for index, value in enumerate(values):
+        
+        x_value = 35
+
+        for index, value in enumerate(values):
+          main_canvas.create_text(
+            x_value, y_value, 
+            text=value,
+            width=360,
+            fill="white",
+            font=("Roboto", 14),
+            justify="center",
+            anchor="w"
+          )
+
+          if  index == 0: x_value += 160
+          if  index == 1: x_value += 160
+          if  index == 2: x_value += 180
+          if  index == 3: x_value += 130
+          if  index == 4: x_value += 180
+          if  index == 5: x_value += 180
+
+    def on_click(action):
+      select_all_btn.place_forget()
+      select_one_btn.place_forget()
+      create_btn.place_forget()
+      update_btn.place_forget()
+      delete_btn.place_forget()
+      
+      if action=="select_all": 
+        resultados     = controller.select_all()
+        huespedes     = []
+        values        = []
+
+        if not len(resultados.get("msg")):
+          showinfo("No hay huespedes", "No hay huespedes registrados")
+          on_cancel()
+        else:
+          for resultado in resultados.get("msg"):
+            huespedes.append({
+              "Cédula del huésped": resultado[0],
+              "Apellidos del huésped": resultado[1],
+              "Nombres del huésped": resultado[2],
+              "Dirección del huésped": resultado[3],
+              "Ciudad del huésped": resultado[4],
+              "Email del huésped": resultado[5],
+              "Teléfono del huésped": resultado[6],
+            })
+          
+          x_option = 30
+          y_option = 170
+
+          y_value = 230
+
+          options = list(huespedes[0].keys())
+
+          for index, option in enumerate(options):
             main_canvas.create_text(
-              x_value, y_value, 
-              text=value,
-              width=360,
+              x_option, y_option, 
+              text=option,
+              width=150,
               fill="white",
               font=("Roboto", 14),
               justify="center",
               anchor="w"
             )
 
-            if  index == 0: x_value += 160
-            if  index == 1: x_value += 160
-            if  index == 2: x_value += 140
-            if  index == 3: x_value += 330
-            if  index == 4: x_value += 210
+            x_option += 160
+          
+          for huesped in huespedes:
+            x_value = 35
+            values  = list(huesped.values())
 
-          y_value += 60
+            for index, value in enumerate(values):
+              main_canvas.create_text(
+                x_value, y_value, 
+                text=value,
+                width=360,
+                fill="white",
+                font=("Roboto", 14),
+                justify="center",
+                anchor="w"
+              )
 
-        back_btn = Button(
-          main_canvas,
-          width=30, 
-          text="Volver",
-          bg="#f53c3c",
-          fg="white",
-          pady=10,
-          font=("Roboto", 14),
-          borderwidth=0,
-          activebackground="#a32828",
-          activeforeground="white",
-          cursor="hand2",
-          command=on_cancel
-        )
-        back_btn.place(x=450, y=470)
+              if  index == 0: x_value += 160
+              if  index == 1: x_value += 160
+              if  index == 2: x_value += 180
+              if  index == 3: x_value += 130
+              if  index == 4: x_value += 180
+              if  index == 5: x_value += 180
+
+            y_value += 60
+
+          back_btn = Button(
+            main_canvas,
+            width=30, 
+            text="Volver",
+            bg="#f53c3c",
+            fg="white",
+            pady=10,
+            font=("Roboto", 14),
+            borderwidth=0,
+            activebackground="#a32828",
+            activeforeground="white",
+            cursor="hand2",
+            command=on_cancel
+          )
+          back_btn.place(x=450, y=520)
 
       if action=="select_one": 
+        ced_hue = StringVar()
+
         main_canvas.create_text(
           480, 172, 
           text="Cédula del huésped",
@@ -263,7 +347,8 @@ class Huesped(Toplevel):
         Entry(
           main_canvas,
           width=45,
-          font=("Roboto", 14)
+          font=("Roboto", 14),
+          textvariable=ced_hue
         ).place(x=550, y=160)
 
         back_btn = Button(
@@ -280,7 +365,7 @@ class Huesped(Toplevel):
           cursor="hand2",
           command=on_cancel
         )
-        back_btn.place(x=250, y=470)
+        back_btn.place(x=250, y=520)
 
         search_btn = Button(
           main_canvas,
@@ -294,11 +379,29 @@ class Huesped(Toplevel):
           activebackground="#447e32",
           activeforeground="white",
           cursor="hand2",
-          command=on_search
+          command=lambda: on_search(ced_hue.get())
         )
-        search_btn.place(x=650, y=470)
+        search_btn.place(x=650, y=520)
       
       if action=="create":
+        cedula_variable     = StringVar()
+        apellidos_variable  = StringVar()
+        nombres_variable    = StringVar()
+        direccion_variable  = StringVar()
+        ciudad_variable     = StringVar()
+        email_variable      = StringVar()
+        telefono_variable   = StringVar()
+
+        variables = [
+          cedula_variable,
+          apellidos_variable,
+          nombres_variable,
+          direccion_variable,
+          ciudad_variable,
+          email_variable,
+          telefono_variable,
+        ]
+
         x_text = 550
         y_text = 172
 
@@ -319,7 +422,8 @@ class Huesped(Toplevel):
           Entry(
             main_canvas,
             width=45,
-            font=("Roboto", 14)
+            font=("Roboto", 14),
+            textvariable=variables[index]
           ).place(x=x_entry, y=y_entry)
 
           if index == 2:
@@ -343,7 +447,7 @@ class Huesped(Toplevel):
           cursor="hand2",
           command=on_cancel
         )
-        back_btn.place(x=250, y=470)
+        back_btn.place(x=250, y=520)
 
         save_btn = Button(
           main_canvas,
@@ -357,11 +461,21 @@ class Huesped(Toplevel):
           activebackground="#447e32",
           activeforeground="white",
           cursor="hand2",
-          command=on_save
+          command=lambda: on_save(
+            cedula_variable.get(),
+            apellidos_variable.get(),
+            nombres_variable.get(),
+            direccion_variable.get(),
+            ciudad_variable.get(),
+            email_variable.get(),
+            telefono_variable.get(),
+          )
         )
-        save_btn.place(x=650, y=470)
+        save_btn.place(x=650, y=520)
       
       if action=="update": 
+        ced_hue = StringVar()
+
         main_canvas.create_text(
           480, 172, 
           text="Cédula del huésped",
@@ -376,7 +490,8 @@ class Huesped(Toplevel):
         codigo_entry = Entry(
           main_canvas,
           width=45,
-          font=("Roboto", 14)
+          font=("Roboto", 14),
+          textvariable=ced_hue
         )
         codigo_entry.place(x=550, y=160)
 
@@ -394,7 +509,7 @@ class Huesped(Toplevel):
           cursor="hand2",
           command=on_cancel
         )
-        back_btn.place(x=250, y=470)
+        back_btn.place(x=250, y=520)
 
         accept_btn = Button(
           main_canvas,
@@ -408,11 +523,13 @@ class Huesped(Toplevel):
           activebackground="#447e32",
           activeforeground="white",
           cursor="hand2",
-          command=lambda: on_update(codigo_entry)
+          command=lambda: on_before_update(codigo_entry, accept_btn, ced_hue.get())
         )
-        accept_btn.place(x=650, y=470)
+        accept_btn.place(x=650, y=520)
       
       if action=="delete": 
+        ced_hue = StringVar()
+
         main_canvas.create_text(
           480, 172, 
           text="Cédula del huésped",
@@ -426,7 +543,8 @@ class Huesped(Toplevel):
         Entry(
           main_canvas,
           width=45,
-          font=("Roboto", 14)
+          font=("Roboto", 14),
+          textvariable=ced_hue
         ).place(x=550, y=160)
 
         back_btn = Button(
@@ -443,7 +561,7 @@ class Huesped(Toplevel):
           cursor="hand2",
           command=on_cancel
         )
-        back_btn.place(x=250, y=470)
+        back_btn.place(x=250, y=520)
 
         search_btn = Button(
           main_canvas,
@@ -457,10 +575,10 @@ class Huesped(Toplevel):
           activebackground="#447e32",
           activeforeground="white",
           cursor="hand2",
-          command=on_delete
+          command=lambda: on_delete(ced_hue.get())
         )
         
-        search_btn.place(x=650, y=470)
+        search_btn.place(x=650, y=520)
 
     def back_to_root(root):
       root.iconify()

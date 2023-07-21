@@ -4,7 +4,7 @@ from mysql.connector import Error
 
 class Ingreso():
     def conectar(self):
-        conexion = mysql.connector.connect(host="localhost",user="root",passwd="",db="hospedaje",port=3307)
+        conexion = mysql.connector.connect(host="localhost",user="root",passwd="",db="hospedaje")
         return conexion
 
     def select_all(self):
@@ -29,7 +29,7 @@ class Ingreso():
         try:
             con = self.conectar()
             cursor = con.cursor()
-            sql = f"INSERT INTO ingreso (ced_hue, cod_hab,fec_ing,fec_sal,can_per) VALUES('{cedula}','{codigohabitacion}','{fechaingreso}','{fechasalida}','{cantidadpersonas}');)"
+            sql = f"INSERT INTO ingreso (ced_hue, cod_hab,fec_ing,fec_sal,can_per) VALUES('{cedula}','{codigohabitacion}','{fechaingreso}','{fechasalida}','{cantidadpersonas}');"
             cursor.execute(sql)
             result = cursor.rowcount #Número de filas afectadas
             cursor.execute("commit")
@@ -42,7 +42,7 @@ class Ingreso():
         try:
             con = self.conectar()
             cursor = con.cursor()
-            sql = f"UPDATE huesped SET fec_ing = {fechaingreso}, ape_ing = {fechasalida}, dir_ing = {cantidadpersonas} WHERE cod_ing = {id};"
+            sql = f"UPDATE ingreso SET fec_ing = '{fechaingreso}', fec_sal = '{fechasalida}', can_per = {cantidadpersonas} WHERE cod_ing = {id};"
             cursor.execute(sql)
             result = cursor.rowcount 
             cursor.execute("commit")

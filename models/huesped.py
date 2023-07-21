@@ -3,7 +3,7 @@ from mysql.connector import Error
 
 class Huesped():
     def conectar(self):
-        conexion = mysql.connector.connect(host="localhost",user="root",passwd="",db="hospedaje",port=3307)
+        conexion = mysql.connector.connect(host="localhost",user="root",passwd="",db="hospedaje")
         return conexion
 
     def select_all(self):
@@ -41,7 +41,7 @@ class Huesped():
         try:
             con = self.conectar()
             cursor = con.cursor()
-            sql = f"UPDATE huesped SET nom_hue = '{nombre}', ape_hue = '{apellido}', dir_hue = '{direccion}', ciu_hue = '{ciudad}',email_hue = '{email}',tel_hue = '{telefono}',WHERE ced_hue = '{id}';"
+            sql = f"UPDATE huesped SET ced_hue = {id}, nom_hue = '{nombre}', ape_hue = '{apellido}', dir_hue = '{direccion}', ciu_hue = '{ciudad}',email_hue = '{email}',tel_hue = '{telefono}' WHERE ced_hue = {id};"
             cursor.execute(sql)
             result = cursor.rowcount 
             cursor.execute("commit")

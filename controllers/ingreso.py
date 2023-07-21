@@ -1,66 +1,61 @@
 from models.ingreso import Ingreso
-from datetime import datetime
+from datetime       import datetime
 
 ingreso_modelo = Ingreso()
 
 class ingreso():
     
-    def insert(self, ced_hue, cod_hab, fec_sal, can_per):
+    def insert(ced_hue, cod_hab, fec_ing, fec_sal, can_per):
+        if not ced_hue or not cod_hab or not fec_ing or not fec_sal or not can_per:
+            return {"error": True, "msg": "Faltan campos por llenar, por favor ingrese todos los datos que se le estan pidiendo."}            
         try:
-            
-            if not ced_hue or not cod_hab or not fec_sal or not can_per:
-                return "Faltan campos por llenar, por favor ingrese todos los datos que se le estan pidiendo."
-            
-            if not isinstance(ced_hue, int):
-                return "La cedula del huesped no puede tener puntos decimales."
-            
-            if not isinstance(can_per, int):
-                return "La cantidad de personas no puede tener letras."
-
-            fec_sal = datetime.datetime.strptime(fec_sal, "%d/%m/%Y").date()
-        
+            fec_ing = datetime.strptime(fec_ing, "%d-%m-%Y").date()
+            fec_sal = datetime.strptime(fec_sal, "%d-%m-%Y").date()
         except ValueError:
-
-            print("La fecha es inválida, debe estar e el formato dd/mm/aaaa, por ejemplo: 19/07/2023")
-        
-        else:
-            print("¡La fecha es correcta!")
-
-            result = ingreso_modelo.insert(ced_hue, cod_hab, fec_sal, can_per)
-            return result
+            return {"error": True, "msg": "La fecha es inválida, debe estar e el formato dd-mm-aaaa, por ejemplo: 19-07-2023"}
     
-    def select_all(self):
+        try:
+            can_per = int(can_per)
+        except ValueError:
+            return {"error": True, "msg": "La cantidad de personas debe ser numerico."}
+        
+        result = ingreso_modelo.insert(ced_hue, cod_hab, fec_ing, fec_sal, can_per)
+        print(result)
+        return {"error": False, "msg": result}
+
+    
+    def select_all():
         todos_ing = ingreso_modelo.select_all()
-        return todos_ing
+        return {"error": True, "msg": todos_ing}
     
-    def select_one(self, cod_ing):
-        ing = ingreso_modelo.select_one(cod_ing)
-        return ing
-    
-    def update(self, ced_hue, cod_hab, fec_sal, can_per):
+    def select_one(cod_ing):
         try:
-            
-            if not ced_hue or not cod_hab or not fec_sal or not can_per:
-                return "Faltan campos por llenar, por favor ingrese todos los datos que se le estan pidiendo."
-            
-            if not isinstance(ced_hue, int):
-                return "La cedula del huesped no puede tener puntos decimales."
-            
-            if not isinstance(can_per, int):
-                return "La cantidad de personas no puede tener letras."
-
-            fec_sal = datetime.datetime.strptime(fec_sal, "%d/%m/%Y").date()
-        
+          if not cod_ing:
+              return {"error": True, "msg": "Faltan campos por llenar, por favor ingrese todos los datos que se le estan pidiendo."} 
+          ing = ingreso_modelo.select_one(int(cod_ing))
+          return {"error": False, "msg": ing}
         except ValueError:
+          return {"error": False, "msg": "Codigo invalido"}
 
-            print("La fecha es inválida, debe estar e el formato dd/mm/aaaa, por ejemplo: 19/07/2023")
+    def update(fec_ing, fec_sal, can_per, cod_ing):
+        if not fec_ing or not fec_sal or not can_per or not cod_ing:
+            return {"error": True, "msg": "Faltan campos por llenar, por favor ingrese todos los datos que se le estan pidiendo."}            
+
+        try:
+            fec_ing = datetime.strptime(fec_ing, "%d-%m-%Y").date()
+            fec_sal = datetime.strptime(fec_sal, "%d-%m-%Y").date()
+        except ValueError:
+            return {"error": True, "msg": "La fecha es inválida, debe estar e el formato dd-mm-aaaa, por ejemplo: 19-07-2023"}
         
-        else:
-            print("¡La fecha es correcta!")
-
-            result = ingreso_modelo.update(ced_hue, cod_hab, fec_sal, can_per)
-            return result
+        try:
+            can_per = int(can_per)
+        except ValueError:
+            return {"error": True, "msg": "La cantidad de personas debe ser numerico."}
     
-    def delete(self, cod_ing):
+        result = ingreso_modelo.update(fec_ing, fec_sal, can_per, cod_ing)
+        return {"error": False, "msg": result}
+
+    
+    def delete(cod_ing):
         result = ingreso_modelo.delete(cod_ing)
-        return result
+        return {"error": False, "msg": result}
